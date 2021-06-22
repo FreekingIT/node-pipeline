@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+ 
+  stages {
+    stage('Cloning on local') {
+      steps {
+        git credentialsId: '81569694-768b-405f-b0a1-233167e03cef', url: 'git@github.com:hursh-IT/express-api-starter.git'
+      }
+    }
+    
+    stage('Connecting to Remote Server') {
+      steps {
+      sh '''ssh root@142.93.2.236 <<EOF
+cd /var/www/html/express-api-starter
+git pull
+EOF'''
+      }
+    }
+  stage('Install Dependencies') {
+      steps {
+      sh '''ssh root@142.93.2.236 <<EOF
+cd /var/www/html/express-api-starter
+npm install
+EOF'''
+    }
+  }
+    
+    stage('Restarting The Server') {
+      steps {
+      sh '''ssh root@142.93.2.236 <<EOF
+cd /var/www/html/express-api-starter
+pm2 restart all
+EOF'''
+    }
+  }
+    
+    
+  }
+}
